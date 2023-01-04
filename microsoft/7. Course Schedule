@@ -1,0 +1,56 @@
+Course Schedule
+https://leetcode.com/problems/course-schedule/
+There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+
+    For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+
+Return true if you can finish all courses. Otherwise, return false. 
+
+Example 1:
+
+Input: numCourses = 2, prerequisites = [[1,0]]
+Output: true
+Explanation: There are a total of 2 courses to take. 
+To take course 1 you should have finished course 0. So it is possible.
+
+Example 2:
+
+Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+Output: false
+Explanation: There are a total of 2 courses to take. 
+To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+SOLUTION
+class Solution {
+public:
+    bool dfscyclecheck(int s,int vis[],int dfsvis[],vector<int>adj[]){
+        vis[s]=1;
+        dfsvis[s]=1;
+        for(auto it:adj[s]){
+            if(!vis[it]){
+                if(dfscyclecheck(it,vis,dfsvis,adj)) return 1;
+            }
+            else if(dfsvis[it]) return 1;
+        }
+        dfsvis[s]=0;
+        return 0;
+    }
+    bool canFinish(int n, vector<vector<int>>& p) {//n=numCourses  p=prerequisites
+        vector<int>adj[n];
+        for(int i=0;i<p.size();i++){
+            adj[p[i][0]].push_back(p[i][1]);
+        }
+        int vis[n],dfsvis[n];
+        memset(vis,0,sizeof vis);
+        memset(dfsvis,0,sizeof dfsvis);
+        for(int i=0;i<n;i++){
+            if(!vis[i]){
+                if(dfscyclecheck(i,vis,dfsvis,adj)) return 0;
+            }
+        }
+        return 1;
+    }
+};
+//graph dfs cycle detection
+//tc=O(N+E) N->no of nodes
+//SC=O(2N)
