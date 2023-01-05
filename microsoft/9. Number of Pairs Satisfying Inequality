@@ -1,0 +1,61 @@
+Number of Pairs Satisfying Inequality
+https://leetcode.com/problems/number-of-pairs-satisfying-inequality/
+You are given two 0-indexed integer arrays nums1 and nums2, each of size n, and an integer diff. Find the number of pairs (i, j) such that:
+
+    0 <= i < j <= n - 1 and
+    nums1[i] - nums1[j] <= nums2[i] - nums2[j] + diff.
+
+Return the number of pairs that satisfy the conditions. 
+
+Example 1:
+
+Input: nums1 = [3,2,5], nums2 = [2,2,1], diff = 1
+Output: 3
+Explanation:
+There are 3 pairs that satisfy the conditions:
+1. i = 0, j = 1: 3 - 2 <= 2 - 2 + 1. Since i < j and 1 <= 1, this pair satisfies the conditions.
+2. i = 0, j = 2: 3 - 5 <= 2 - 1 + 1. Since i < j and -2 <= 2, this pair satisfies the conditions.
+3. i = 1, j = 2: 2 - 5 <= 2 - 1 + 1. Since i < j and -3 <= 2, this pair satisfies the conditions.
+Therefore, we return 3.
+
+
+
+SOLUTION
+class Solution {
+public:
+    long long int count;
+    void merge(vector<int>&c,int start,int mid,int end,int diff){
+        int l=start,r=mid+1;
+        while(l<=mid && r<=end){
+            if(c[l]<=c[r]+diff){
+                count+=(end-r+1);
+                l++;
+            }
+            else{
+                r++;
+            }
+        }
+        sort(c.begin()+start,c.begin()+end+1);
+        return;
+    }
+    void mergesort(vector<int>&c,int start,int end,int diff){
+        if(start==end) return ;
+        int mid=(start+end)/2;
+        mergesort(c,start,mid,diff);
+        mergesort(c,mid+1,end,diff);
+        merge(c,start,mid,end,diff);
+        return;
+    }
+    long long numberOfPairs(vector<int>& nums1, vector<int>& nums2, int diff) {
+        count=0;
+        int n=nums1.size();
+        vector<int>c(n);        
+        for(int i=0;i<n;i++){
+            c[i]=nums1[i]-nums2[i];
+        }
+        mergesort(c,0,n-1,diff);
+        return count;
+    }
+};
+//Time complexity would be O(N log^2 N), as there are logN calls for mergeSort 
+//and each sorting operation in check count will take NlogN time.
