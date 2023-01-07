@@ -1,0 +1,41 @@
+Number of Boomerangs
+https://leetcode.com/problems/number-of-boomerangs/
+You are given n points in the plane that are all distinct, where points[i] = [xi, yi]. A boomerang is a tuple of points (i, j, k) such that the distance between i and j equals the distance between i and k (the order of the tuple matters).
+
+Return the number of boomerangs. 
+
+Example 1:
+
+Input: points = [[0,0],[1,0],[2,0]]
+Output: 2
+Explanation: The two boomerangs are [[1,0],[0,0],[2,0]] and [[1,0],[2,0],[0,0]].
+
+
+
+
+
+
+SOLUTION
+class Solution {
+public:
+    int numberOfBoomerangs(vector<vector<int>>& points) {
+        int ans=0;
+        for(auto it1:points){
+            unordered_map<double,int> mp;
+            auto x1 = it1[0];
+            auto y1 = it1[1];
+            for(auto it2:points){
+                if(it1 == it2) continue;                
+                auto x2 = it2[0];
+                auto y2 = it2[1];
+                int xdist = (x1 - x2) * (x1 - x2);
+                int ydist = (y1 - y2) * (y1 - y2);                
+                double finalDist = sqrt(xdist + ydist);                
+                mp[finalDist]++;
+            }
+            for(auto &i : mp) 
+				if(i.second > 1)   ans += (i.second * (i.second-1)); 
+        }
+        return ans;
+    }
+};
