@@ -1,0 +1,105 @@
+Invalid Transactions
+https://leetcode.com/problems/invalid-transactions/description/
+
+A transaction is possibly invalid if:
+
+    the amount exceeds $1000, or;
+    if it occurs within (and including) 60 minutes of another transaction with the same name in a different city.
+
+You are given an array of strings transaction where transactions[i] consists of comma-separated values representing the name, time (in minutes), amount, and city of the transaction.
+
+Return a list of transactions that are possibly invalid. You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: transactions = ["alice,20,800,mtv","alice,50,100,beijing"]
+Output: ["alice,20,800,mtv","alice,50,100,beijing"]
+Explanation: The first transaction is invalid because the second transaction occurs within a difference of 60 minutes, have the same name and is in a different city. Similarly the second one is invalid too.
+
+Example 2:
+
+Input: transactions = ["alice,20,800,mtv","alice,50,1200,mtv"]
+Output: ["alice,50,1200,mtv"]
+
+
+
+
+
+SOLUTION
+class transaction {
+public:
+    int time;
+    int amount;
+    string city;
+    string tran;
+    bool marked;
+    
+    transaction (int t, int a, string c, string tr) {
+        tran = tr;
+        time = t;
+        amount = a;
+        city = c;
+        marked = false;
+    }
+};
+class Solution {
+public:
+    vector<string> invalidTransactions(vector<string>& transactions) {
+        if(transactions.empty())
+            return {};
+        
+        unordered_map<string, vector<transaction*>> trans;
+        
+        for(string &st : transactions) {
+            istringstream ss(st);
+            string token = "";
+           
+            getline(ss, token, ',');
+            string name = token;
+            getline(ss, token, ',');
+            int time = stoi(token);
+            getline(ss, token, ',');
+            int amount = stoi(token);
+            getline(ss, token, ',');
+            string city = token;
+            
+            transaction *t = new transaction(time, amount, city, st);
+            trans[name].push_back(t);
+        }
+        vector<string> result;
+        
+        for(auto &p : trans) {
+           
+            sort(p.second.begin(), p.second.end(), [](const transaction* a, const transaction* b) {
+                return a->time < b->time;
+            });
+            for(int i=0; i<p.second.size(); i++) {
+                
+                if(p.second[i]->amount > 1000) {
+                    result.push_back(p.second[i]->tran);
+                    p.second[i]->marked = true;
+                }
+               
+                if(i > 0 && p.second[i]->time <= p.second[i-1]->time + 60) {
+                    int r = i-1;
+                    while(r >= 0 && p.second[r]->time >= p.second[i]->time - 60) {
+                        if(p.second[i]->city != p.second[r]->city) {
+                            if(!p.second[r]->marked) {
+                                result.push_back(p.second[r]->tran);
+                                p.second[r]->marked = true;
+                            }
+                            if(!p.second[i]->marked) {
+                                p.second[i]->marked = true;
+                                result.push_back(p.second[i]->tran);
+                            }
+                        }
+                        r--;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
