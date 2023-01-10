@@ -1,0 +1,97 @@
+Count Good Triplets in an Array
+class Solution {
+public:
+    int prev[100001] = {};
+    array<int, 2> ARR[100001];  // num, index
+
+    #define BYIND [](auto const &a, auto const &b){return a[1] < b[1];}
+    #define BYNUM [](auto const &a, auto const &b){return a[0] < b[0];}
+
+    long CDQ(array<int, 2> *arr, int n) {
+        if(n <= 1) return 0;
+        int mid = n / 2, m = n - mid;
+        long ret = CDQ(arr, mid);  // to build the corrent "prev" array
+        long sum = 0;
+        
+        sort(arr, arr + mid, BYNUM), sort(arr + mid, arr + n, BYNUM);
+        for(int i = 0, j = mid; j < n; ++j) {
+            int cur = arr[j][0], indj = arr[j][1];
+            while(i < mid && arr[i][0] < cur) {
+                sum += prev[arr[i][1]];
+                ++i;
+            }
+            ret += sum;
+            prev[indj] += i;  // update the #prevs for j
+        }
+        // restore the arr
+        sort(arr, arr + n, BYIND);
+        ret += CDQ(arr + mid, m);
+        return ret;
+    }
+
+    long long goodTriplets(vector<int>& A, vector<int>& B) {
+        unordered_map<int, int> M;
+        for(int i = 0; i < B.size(); ++i) M[B[i]] = i;
+
+        for(int &i: A) i = M[i];
+
+        for(int i = 0; i < A.size(); ++i) ARR[i] = {A[i], i};
+
+        return CDQ(ARR, A.size());
+    }
+};
+
+
+
+class Solution {
+public:
+    #define n 100005
+
+    class segtree {
+        int tree[n * 2] = {};  // Need to init
+        public:
+
+        int q(int l, int r) {
+            l += n, r += n;
+            int ret = 0;
+            while(l <= r) {
+                if(l % 2 == 1) ret += tree[l++];
+                if(r % 2 == 0) ret += tree[r--];
+                l /= 2, r /= 2;
+            }
+            return ret;
+        }
+
+        void mod(int i, int k) {
+            i += n;
+            tree[i] += k;
+            for(i /= 2; i >= 1; i /= 2)
+                tree[i] = tree[i * 2] + tree[i * 2 + 1];
+        }
+    };
+
+    long long goodTriplets(vector<int>& A, vector<int>& B) {
+        unordered_map<int, int> M;
+        for(int i = 0; i < B.size(); ++i) M[B[i]] = i;
+
+        for(int &i: A) i = M[i];
+
+        segtree l, r;
+
+        // build right
+        for(int i = 0; i < A.size(); ++i) r.mod(A[i], 1);
+
+        long ret = 0;
+        for(int i = 0; i < A.size(); ++i) {
+            int cur = A[i];
+            r.mod(cur, -1);
+            long lsum = l.q(0, cur - 1);
+            int rsum = r.q(cur + 1, A.size());
+            ret += lsum * rsum;
+            // update
+            l.mod(cur, 1);
+        }
+
+        return ret;
+    }
+};
