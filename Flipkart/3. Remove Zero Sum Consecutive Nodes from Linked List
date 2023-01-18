@@ -1,0 +1,33 @@
+class Solution {
+public:
+    ListNode* removeZeroSumSublists(ListNode* head) {
+        ListNode *dummy = new ListNode(0);
+        dummy -> next = head;
+        ListNode *curr = head;
+        map<int, ListNode*> m;
+        m[0] = dummy;
+        int sum = 0;
+        while(curr) {
+            sum += curr -> val;
+            if(m.count(sum)) {
+                ListNode *p = m[sum] -> next;
+                int val = sum;
+                while(p != curr) {
+                    val += p -> val;
+                    m.erase(val);
+                    p = p -> next;
+                }
+                m[sum] -> next = curr -> next;                
+            }else {
+                m[sum] = curr;
+            }
+            curr = curr -> next;
+        }        
+        return dummy -> next;
+    }
+};
+//logic= consider it as an array. take int sum=0 and keep on adding the value of each node. 
+//make a map and store the node corresponding to the sum
+//if the sum is repeated then that means it is making sum of elements between them as 0
+//then solve accordingly
+// TC: O(N)  SC: O(N)
