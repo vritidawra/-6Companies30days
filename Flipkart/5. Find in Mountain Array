@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int findInMountainArray(int target, MountainArray &m) {
+        int st=0;
+        int end=m.length()-1;
+        int mid;
+        //finding peak of mountain
+        while(end>st){
+            mid=st+(end-st)/2;
+           
+            if(m.get(mid)>m.get(mid+1)){
+                end=mid;
+            }
+            else if(m.get(mid)<m.get(mid+1)){
+                st=mid+1;
+            }          
+        }
+        int std=mid; //starting of right of peak which is sorted in decreasing order
+        int endd=m.length()-1; // ending of the same
+        //searching for target on left of the peak
+        end=st;
+        st=0;
+        while(st<=end){
+            mid=st+(end-st)/2;
+            if(m.get(mid)==target){
+                return mid;
+            }
+            else if(m.get(mid)>target){
+                end=mid-1;
+            }
+            else{
+                st=mid+1;
+            }
+        }
+        //searching for target on right of the peak
+        while(std<=endd){
+            mid=std+(endd-std)/2;
+            if(m.get(mid)==target){
+                return mid;
+            }
+            else if(m.get(mid)<target){
+                endd=mid-1;
+            }
+            else{
+                std=mid+1;
+            }           
+        }        
+        return -1; 
+    }
+};
