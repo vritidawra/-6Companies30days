@@ -1,0 +1,56 @@
+class Solution {
+public:
+    struct cmp {
+    bool operator() (pair<int, string> a, pair<int, string> b) {
+        if(a.first == b.first)
+            return a.second > b.second;
+        else
+            return a.first < b.first;
+        }
+    };
+    vector<string> topKFrequent(vector<string>& words, int k) {
+        priority_queue<pair<int,string>, vector<pair<int,string>>, cmp> maxh;
+        unordered_map<string,int>mp;
+        for(auto &x:words){
+            mp[x]++;
+        }
+        
+        for(auto &it:mp){
+            maxh.push({it.second,it.first});
+        }
+        vector<string>ans;
+        while(k>0){
+            auto x=maxh.top();
+            maxh.pop();
+            ans.push_back(x.second);
+            k--;
+        }
+        return ans;
+    }
+};
+
+
+
+
+
+
+class SORTracker {
+public:
+    #define pis pair<int, string> 
+    struct cmp{
+        bool operator()(pis &a, pis & b){
+            if(a.first == b.first) return a.second > b.second; 
+            return a.first < b.first; 
+        }
+    };
+    
+    struct cmpRev{
+        bool operator()(pis &a, pis & b){
+            if(a.first == b.first) return a.second < b.second; 
+            return a.first > b.first; 
+        }
+    };
+    
+    int i = 0; 
+    priority_queue<pis, vector<pis>, cmp> maxHeap; 
+    priority_queue<pis, vector<pis>, cmpRev> minHeap; 
