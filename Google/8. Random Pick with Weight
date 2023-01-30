@@ -1,0 +1,16 @@
+class Solution {
+    vector<int>p;
+public:
+    Solution(vector<int>& w) {
+        p.push_back(w[0]);
+        for(int i=1;i<w.size();i++){
+            p.push_back(p.back()+w[i]);
+        }
+    }
+    
+    int pickIndex() {
+        int n=rand()%p.back();
+        auto it=upper_bound(p.begin(),p.end(),n);
+        return it-p.begin();
+    }
+};
