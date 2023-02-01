@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int dx[4] = {0,1,0,-1};
+    int dy[4] = {1,0,-1,0};
+    #define vi vector<int>
+    int swimInWater(vector<vector<int>>& grid) {
+        int n=grid.size();
+        priority_queue<vi,vector<vi>,greater<vi>> minh;
+        vector<vector<bool>>vis(n,vector<bool>(n,0));
+        //             w, x ,y
+        minh.push({grid[0][0],0,0});
+        vis[0][0]=1;
+        while(!minh.empty()){
+            auto temp=minh.top();
+            minh.pop();
+            for(int i=0;i<4;i++){
+                int x=temp[1]+dx[i];
+                int y=temp[2]+dy[i];
+
+                if(x<0 || y<0 || x>=n || y>=n) continue;
+                if(vis[x][y]==1) continue;
+                if(x==n-1 && y==n-1){
+                    return max(grid[x][y],temp[0]);
+                }
+                vis[x][y]=1;
+                int poss_ans=max(grid[x][y],temp[0]);
+                minh.push({poss_ans,x,y});
+            }
+            
+        }
+        return 0;
+    }
+};
